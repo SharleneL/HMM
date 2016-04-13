@@ -72,7 +72,8 @@ def forward_backward(alpha_table, beta_table, A_org, B_org, index_dic, input_str
 
     # ===== / E STEP start - generate xi_list / ===== #
     xi_list = []    # list of 2*2 matrix
-    p = np.exp(logsumexp(alpha_table[-1, :]))  # denominator
+    # p = np.exp(logsumexp(alpha_table[-1, :]))  # denominator
+    p = logsumexp(alpha_table[-1, :])  # denominator
     print 'alpha_table[-1, :]:'
     print logsumexp(alpha_table[-1, :])
     for t in range(0, len(alpha_table) - 1):
@@ -103,17 +104,37 @@ def forward_backward(alpha_table, beta_table, A_org, B_org, index_dic, input_str
 
     # ===== / M STEP start - update A & B / ===== #
     xi_sum = np.zeros(A.shape)
-    for i in range(len(xi_list)):
-        xi_sum = xi_sum + xi_list[i]
+    # for i in range(len(xi_list)):
+    #     xi_sum = xi_sum + xi_list[i]
+
+    for i, j in np.ndindex(xi_sum.shape):
+        xi_sum[i, j] = logsumexp([xi_list[x][i, j] for x in range(len(xi_list))])
+
     print 'xi_sum:'
     print xi_sum
-    print np.sum(xi_sum, axis=1)[:, np.newaxis]
+
     # update A
-    new_A = xi_sum / np.sum(xi_sum, axis=1)[:, np.newaxis]
-    print new_A
+    # old non log sum:
+    # new_A_denom = np.sum(xi_sum, axis=1)[:, np.newaxis]
+    # new log sum:
+    new_A_denom = np.zeros((xi_sum.shape[0], 1))
+    for i in range(new_A_denom.shape[0]):
+        tmp_l = []
+        for m in range(len(xi_list)):
+            tmp_l.append(logsumexp([xi_list[m][i, n] for n in range(xi_sum.shape[1])]))  # row sum
+        new_A_denom[i, 0] = logsumexp(tmp_l)
+    new_A = xi_sum - new_A_denom
+
     # update B
-    new_B_denom = np.sum(xi_sum, axis=0)     # 1*2 vector
     new_B = np.zeros(B.shape)  # 27*2 matrix
+    # new_B_denom = np.sum(xi_sum, axis=0)     # 1*2 vector
+    new_B_denom = np.zeros((1, xi_sum.shape[0]))
+    for i in range(new_B_denom.shape[1]):
+        tmp_l = []
+        for m in range(len(xi_list)):
+            tmp_l.append(logsumexp([xi_list[m][i, n] for n in range(xi_sum.shape[0])]))  # col sum
+        new_B_denom[0, i] = logsumexp(tmp_l)
+
 
     obsv_xlst_dic = dict()      # <obsv, current_obsv_xi_list>
     for i in range(len(input_str)-1):
@@ -121,18 +142,30 @@ def forward_backward(alpha_table, beta_table, A_org, B_org, index_dic, input_str
         if next_obsv not in obsv_xlst_dic:
             xlst = []
             xlst.append(xi_list[i])
+            obsv_xlst_dic[next_obsv] = xlst
         else:
-            xlst[next_obsv].append(xi_list[i])
+            obsv_xlst_dic[next_obsv].append(xi_list[i])
 
     for obsv, xlst in obsv_xlst_dic.iteritems():
-        xlst_sum = np.zeros(1, xlst[0].shape[1])  # 1*2 matrix
-        for i in range(len(xlst)):
-            cur_x = xlst[i]
-            xlst_sum = xlst_sum + np.sum(cur_x, axis=0)   # 1*2 matrix
-        new_B[index_dic[obsv]] = xlst_sum / new_B_denom
+        xlst_sum = np.zeros((1, xlst[0].shape[1]))  # 1*2 matrix
+        # for i in range(len(xlst)):
+        #     cur_x = xlst[i]
+        #     xlst_sum = xlst_sum + np.sum(cur_x, axis=0)   # 1*2 matrix, col sum
+        for i in range(xlst_sum.shape[1]):
+            tmp_l = []
+            for m in range(len(xlst)):
+                tmp_l.append(logsumexp([xlst[m][i, n] for n in range(xi_sum.shape[0])]))  # col sum
+            xlst_sum[0, i] = logsumexp(tmp_l)
+
+        new_B[index_dic[obsv]] = xlst_sum - new_B_denom
+
     # get new_A and new_B, 1 iter ends
     A = np.exp(new_A)
+    # print A
     B = np.exp(new_B)
+    print B
+    print '\n'
+    print np.sum(B, axis=0)
     # print new_A
     # print B
     # ===== / M STEP end / ===== #
