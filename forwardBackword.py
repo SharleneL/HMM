@@ -77,11 +77,14 @@ def forward_backward(alpha_table, beta_table, A_org, B_org, index_dic, input_str
     p = logsumexp(alpha_table[-1, :])  # denominator
     # print 'alpha_table[-1, :]:'
     # print logsumexp(alpha_table[-1, :])
-    for t in range(0, len(alpha_table) - 1):
+    for t in range(0, len(input_str)):
+        obsv_ch = input_str[t]
         alpha_t = np.array(alpha_table[t])[:, np.newaxis]  # transpose to 2*1 vector
         # print alpha_table[t][:, np.newaxis]
         beta_t_plus_one = beta_table[t+1]           # 1*2 vector
-        B_t_plus_one = B[index_dic[input_str[t+1]]] # 1*2 vector
+        # print t
+        # print len(input_str)
+        B_t_plus_one = B[index_dic[obsv_ch]]  # 1*2 vector
         # xi_t = (A * alpha_t * B_t_plus_one * beta_t_plus_one) / p  # a 2*2 matrix
         xi_t = A + alpha_t + B_t_plus_one + beta_t_plus_one - p  # a 2*2 matrix
 
