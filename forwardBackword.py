@@ -33,7 +33,7 @@ def forward(input_str, A, B, index_dic):
         alpha_old = alpha_new
 
     # calculate pcll
-    pcll = logsumexp(alpha_table_list[-1]) / len(alpha_table_list)
+    pcll = logsumexp(alpha_table_list[-1]) / (len(alpha_table_list)-1)
     print alpha_table_list[-1]
     print pcll
     return np.array(alpha_table_list)
@@ -61,7 +61,7 @@ def backward(input_str, A, B, index_dic):
 
     # calculate pcll
     print beta_table_list[-1]
-    pcll = logsumexp(beta_old) / len(beta_table_list)
+    pcll = logsumexp(beta_old) / (len(beta_table_list)-1)
     print pcll
     beta_table_list.reverse()
     return np.array(beta_table_list)  # reverse the list

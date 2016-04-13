@@ -27,7 +27,7 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="48" max-vertical-offset="615">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="615">
               <caret line="24" column="25" selection-start-line="24" selection-start-column="25" selection-end-line="24" selection-end-column="25" />
               <folding>
                 <element signature="e#26#36#0" expanded="true" />
@@ -39,8 +39,8 @@
       <file leaf-file-name="forwardBackword.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/forwardBackword.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.45627376" vertical-offset="495" max-vertical-offset="4440">
-              <caret line="49" column="30" selection-start-line="49" selection-start-column="30" selection-end-line="49" selection-end-column="30" />
+            <state vertical-scroll-proportion="0.058935363" vertical-offset="494" max-vertical-offset="4440">
+              <caret line="35" column="70" selection-start-line="35" selection-start-column="70" selection-end-line="35" selection-end-column="70" />
               <folding>
                 <element signature="e#26#44#0" expanded="true" />
               </folding>
@@ -402,8 +402,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/forwardBackword.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.45627376" vertical-offset="495" max-vertical-offset="4440">
-          <caret line="49" column="30" selection-start-line="49" selection-start-column="30" selection-end-line="49" selection-end-column="30" />
+        <state vertical-scroll-proportion="0.058935363" vertical-offset="494" max-vertical-offset="4440">
+          <caret line="35" column="70" selection-start-line="35" selection-start-column="70" selection-end-line="35" selection-end-column="70" />
           <folding>
             <element signature="e#26#44#0" expanded="true" />
           </folding>
