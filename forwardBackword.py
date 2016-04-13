@@ -22,11 +22,6 @@ def forward(input_str, A, B, index_dic):
         # alpha_new = np.multiply(    np.dot(alpha_old, A),      B[index_dic[obsv_ch]]    )
         right_M = np.log(np.multiply(A, B[index_dic[obsv_ch]]))  # 2*2 matrix; B*A element-wise
         tmp_M = right_M + alpha_old[:, np.newaxis]
-        # print 'obsv_ch: ' + obsv_ch + ' ; p:' + str(B[index_dic[obsv_ch]])
-        # print 'right_M:'
-        # print right_M
-        # print 'tmp_M:'
-        # print tmp_M
         # alpha_new = log_add_matrix_by_col(tmp_M)
         alpha_new = logsumexp(tmp_M, axis=0)
         # got the new alpha
@@ -84,20 +79,6 @@ def forward_backward(alpha_table, beta_table, A_org, B_org, index_dic, input_str
         # xi_t = (A * alpha_t * B_t_plus_one * beta_t_plus_one) / p  # a 2*2 matrix
         xi_t = A + alpha_t + B_t_plus_one + beta_t_plus_one - p  # a 2*2 matrix
 
-        # print 'A:'
-        # print A
-        # print 'alpha_t:'
-        # print alpha_t
-        # print 'B_t+1:'
-        # print B_t_plus_one
-        # print 'beta_t+1:'
-        # print beta_t_plus_one
-        # print 'p:'
-        # print p
-        # print 'xi_t:'
-        # print xi_t
-        # break
-
         xi_list.append(xi_t)
     # get xi_list (len = T-1, each elem is a 2*2 matrix for time t)
     # ===== / E STEP end / ===== #
@@ -109,9 +90,6 @@ def forward_backward(alpha_table, beta_table, A_org, B_org, index_dic, input_str
 
     for i, j in np.ndindex(xi_sum.shape):
         xi_sum[i, j] = logsumexp([xi_list[x][i, j] for x in range(len(xi_list))])
-
-    # print 'xi_sum:'
-    # print xi_sum
 
     # update A
     # old non log sum:
@@ -164,15 +142,6 @@ def forward_backward(alpha_table, beta_table, A_org, B_org, index_dic, input_str
     # print A
     B = np.exp(new_B)
     return A, B
-    # print B
-    # print '\n'
-    # print np.sum(B, axis=0)
-
-    # print new_A
-    # print B
-    # ===== / M STEP end / ===== #
-    # print len(alpha_table)
-    # print len(beta_table)
 
 
 # HELPER FUNCTIONS
@@ -189,8 +158,8 @@ def gen_index_dic():
 # C-0; V-1
 def init_matrix(index_dic):
     # initialize A
-    A = np.array([[0.41, 0.27], [0.27, 0.05]])
-    # A = np.matrix('0.41, 0.27; 0.27, 0.05')
+    # A = np.array([[0.41, 0.27], [0.27, 0.05]])
+    A = np.array([[0.24765875, 0.75234125], [0.95411204, 0.04588796]])
 
     # initialize B
     B = np.zeros((27, 2))
@@ -223,71 +192,74 @@ def init_matrix(index_dic):
     # B[index_dic['I'], 1] = 0.183762190107
     # B[index_dic['U'], 1] = 0.0712019739161
 
-    c_plist = [0.06183554,  0.08332566,  0.02379228,  0.02073176,  0.0073404,
-               0.02277239,  0.08305517,  0.01768361,  0.04234685,  0.09333324,
-               0.06103869,  0.03998046,  0.0153036,   0.05414055,  0.01259877,
-               0.01748313,  0.00318087,  0.00207628,  0.03897187,  0.03962615,
-               0.09252289,  0.03931093,  0.02890681,  0.0223135,   0.0487764,
-               0.00050001,  0.0270522]
-    v_plist = [0.01581271,  0.03298188,  0.00450089,  0.00139274,  0.12130682,  0.00962174,
-               0.06276313,  0.00905822,  0.03807048,  0.00265317,  0.00870575,  0.1460451,
-               0.0293877,   0.0301952,   0.10082372,  0.01131645,  0.02768962,  0.05231846,
-               0.02835093,  0.02515332,  0.04893928,  0.01998768,  0.00978879,  0.11579457,
-               0.00962491,  0.01321897,  0.02449778]
-    B[index_dic[' '], 0] = c_plist[0]
-    B[index_dic['A'], 0] = c_plist[1]
-    B[index_dic['B'], 0] = c_plist[2]
-    B[index_dic['C'], 0] = c_plist[3]
-    B[index_dic['D'], 0] = c_plist[4]
-    B[index_dic['E'], 0] = c_plist[5]
-    B[index_dic['F'], 0] = c_plist[6]
-    B[index_dic['G'], 0] = c_plist[7]
-    B[index_dic['H'], 0] = c_plist[8]
-    B[index_dic['I'], 0] = c_plist[9]
-    B[index_dic['J'], 0] = c_plist[10]
-    B[index_dic['K'], 0] = c_plist[11]
-    B[index_dic['L'], 0] = c_plist[12]
-    B[index_dic['M'], 0] = c_plist[13]
-    B[index_dic['N'], 0] = c_plist[14]
-    B[index_dic['O'], 0] = c_plist[15]
-    B[index_dic['P'], 0] = c_plist[16]
-    B[index_dic['Q'], 0] = c_plist[17]
-    B[index_dic['R'], 0] = c_plist[18]
-    B[index_dic['S'], 0] = c_plist[19]
-    B[index_dic['T'], 0] = c_plist[20]
-    B[index_dic['U'], 0] = c_plist[21]
-    B[index_dic['V'], 0] = c_plist[22]
-    B[index_dic['W'], 0] = c_plist[23]
-    B[index_dic['X'], 0] = c_plist[24]
-    B[index_dic['Y'], 0] = c_plist[25]
-    B[index_dic['Z'], 0] = c_plist[26]
-    B[index_dic[' '], 1] = v_plist[0]
-    B[index_dic['A'], 1] = v_plist[1]
-    B[index_dic['B'], 1] = v_plist[2]
-    B[index_dic['C'], 1] = v_plist[3]
-    B[index_dic['D'], 1] = v_plist[4]
-    B[index_dic['E'], 1] = v_plist[5]
-    B[index_dic['F'], 1] = v_plist[6]
-    B[index_dic['G'], 1] = v_plist[7]
-    B[index_dic['H'], 1] = v_plist[8]
-    B[index_dic['I'], 1] = v_plist[9]
-    B[index_dic['J'], 1] = v_plist[10]
-    B[index_dic['K'], 1] = v_plist[11]
-    B[index_dic['L'], 1] = v_plist[12]
-    B[index_dic['M'], 1] = v_plist[13]
-    B[index_dic['N'], 1] = v_plist[14]
-    B[index_dic['O'], 1] = v_plist[15]
-    B[index_dic['P'], 1] = v_plist[16]
-    B[index_dic['Q'], 1] = v_plist[17]
-    B[index_dic['R'], 1] = v_plist[18]
-    B[index_dic['S'], 1] = v_plist[19]
-    B[index_dic['T'], 1] = v_plist[20]
-    B[index_dic['U'], 1] = v_plist[21]
-    B[index_dic['V'], 1] = v_plist[22]
-    B[index_dic['W'], 1] = v_plist[23]
-    B[index_dic['X'], 1] = v_plist[24]
-    B[index_dic['Y'], 1] = v_plist[25]
-    B[index_dic['Z'], 1] = v_plist[26]
+    c_plist = [5.72482639e-02,   6.76097579e-02,   5.32669429e-02,   2.92552278e-02,
+               1.94083383e-02,   2.27931545e-02,   5.51975355e-02,   4.52549686e-02,
+               3.37799449e-02,   2.98281194e-03,   1.84010429e-03,   5.99670829e-02,
+               2.21161701e-02,   6.39406023e-02,   3.90074565e-02,   5.76843345e-02,
+               3.62624878e-02,   6.25240503e-02,   1.04404729e-02,   5.33771198e-02,
+               2.29924701e-02,   9.17564722e-05,   3.69603060e-02,   5.22156435e-02,
+               3.65602181e-02,   3.41946055e-02,   2.30281727e-02]
+    v_plist = [4.69000607e-02,   3.63109776e-02,   5.00662394e-02,   5.34804147e-02,
+               3.07480701e-02,   3.67968195e-02,   5.73452960e-02,   1.01652530e-02,
+               1.31955364e-02,   7.34181292e-02,   5.99057561e-02,   3.70296828e-02,
+               4.54309822e-02,   4.47673511e-02,   4.73604908e-02,   6.74726205e-02,
+               4.11496913e-02,   3.19366497e-03,   6.35058469e-02,   1.18046495e-02,
+               1.92433268e-02,   3.95879605e-02,   2.35828607e-02,   1.01672814e-02,
+               2.05918877e-02,   1.83547085e-02,   3.84244412e-02]
+    B[index_dic['A'], 0] = c_plist[0]
+    B[index_dic['B'], 0] = c_plist[1]
+    B[index_dic['C'], 0] = c_plist[2]
+    B[index_dic['D'], 0] = c_plist[3]
+    B[index_dic['E'], 0] = c_plist[4]
+    B[index_dic['F'], 0] = c_plist[5]
+    B[index_dic['G'], 0] = c_plist[6]
+    B[index_dic['H'], 0] = c_plist[7]
+    B[index_dic['I'], 0] = c_plist[8]
+    B[index_dic['J'], 0] = c_plist[9]
+    B[index_dic['K'], 0] = c_plist[10]
+    B[index_dic['L'], 0] = c_plist[11]
+    B[index_dic['M'], 0] = c_plist[12]
+    B[index_dic['N'], 0] = c_plist[13]
+    B[index_dic['O'], 0] = c_plist[14]
+    B[index_dic['P'], 0] = c_plist[15]
+    B[index_dic['Q'], 0] = c_plist[16]
+    B[index_dic['R'], 0] = c_plist[17]
+    B[index_dic['S'], 0] = c_plist[18]
+    B[index_dic['T'], 0] = c_plist[19]
+    B[index_dic['U'], 0] = c_plist[20]
+    B[index_dic['V'], 0] = c_plist[21]
+    B[index_dic['W'], 0] = c_plist[22]
+    B[index_dic['X'], 0] = c_plist[23]
+    B[index_dic['Y'], 0] = c_plist[24]
+    B[index_dic['Z'], 0] = c_plist[25]
+    B[index_dic[' '], 0] = c_plist[26]
+    B[index_dic['A'], 1] = v_plist[0]
+    B[index_dic['B'], 1] = v_plist[1]
+    B[index_dic['C'], 1] = v_plist[2]
+    B[index_dic['D'], 1] = v_plist[3]
+    B[index_dic['E'], 1] = v_plist[4]
+    B[index_dic['F'], 1] = v_plist[5]
+    B[index_dic['G'], 1] = v_plist[6]
+    B[index_dic['H'], 1] = v_plist[7]
+    B[index_dic['I'], 1] = v_plist[8]
+    B[index_dic['J'], 1] = v_plist[9]
+    B[index_dic['K'], 1] = v_plist[10]
+    B[index_dic['L'], 1] = v_plist[11]
+    B[index_dic['M'], 1] = v_plist[12]
+    B[index_dic['N'], 1] = v_plist[13]
+    B[index_dic['O'], 1] = v_plist[14]
+    B[index_dic['P'], 1] = v_plist[15]
+    B[index_dic['Q'], 1] = v_plist[16]
+    B[index_dic['R'], 1] = v_plist[17]
+    B[index_dic['S'], 1] = v_plist[18]
+    B[index_dic['T'], 1] = v_plist[19]
+    B[index_dic['U'], 1] = v_plist[20]
+    B[index_dic['V'], 1] = v_plist[21]
+    B[index_dic['W'], 1] = v_plist[22]
+    B[index_dic['X'], 1] = v_plist[23]
+    B[index_dic['Y'], 1] = v_plist[24]
+    B[index_dic['Z'], 1] = v_plist[25]
+    B[index_dic[' '], 1] = v_plist[26]
 
 
     return A, B
