@@ -13,48 +13,54 @@ def gen_matrix(input_str):
 
 def forward(input_str, A, B, index_dic):
     alpha_table_list = []
-    alpha_old = np.array([1.0, 0.0])
+    alpha_old = np.array([0.5, 0.5])
 
     # do calculation
     alpha_old = np.log(alpha_old)  # 1*2 vector; log of original alpha_old
-    for i in range(len(input_str)):
-        obsv_ch = input_str[i]  # current observed char
+    alpha_table_list.append(alpha_old)
+    for t in range(len(input_str)):
+        obsv_ch = input_str[t]  # current observed char
         # alpha_new = np.multiply(    np.dot(alpha_old, A),      B[index_dic[obsv_ch]]    )
         right_M = np.log(np.multiply(A, B[index_dic[obsv_ch]]))  # 2*2 matrix; B*A element-wise
         tmp_M = right_M + alpha_old[:, np.newaxis]
         # alpha_new = log_add_matrix_by_col(tmp_M)
-        alpha_new = logsumexp(tmp_M, axis=0)
+        alpha_new = logsumexp(tmp_M, axis=0)  # axis=0: sum each col
         # got the new alpha
         # print 'alpha_new:'
         # print alpha_new
+        # break
         alpha_table_list.append(alpha_new)
         alpha_old = alpha_new
 
     # calculate pcll
-    pcll = logsumexp(alpha_old) / len(alpha_table_list)
+    pcll = logsumexp(alpha_table_list[-1]) / len(alpha_table_list)
+    print alpha_table_list[-1]
     print pcll
     return np.array(alpha_table_list)
 
 
 def backward(input_str, A, B, index_dic):
     beta_table_list = []
-    beta_old = np.array([1.0, 0.0])
+    beta_old = np.array([0.5, 0.5])
 
     # do calculation
     beta_old = np.log(beta_old)  # 1*2 vector; log of original beta_old
+    beta_table_list.append(beta_old)
     for i in range(len(input_str)-1, -1, -1):
         obsv_ch = input_str[i]
         # beta_new = np.dot(    np.multiply(beta_old, B[index_dic[obsv_ch]]),         A   )
         right_M = np.log(np.multiply(A, B[index_dic[obsv_ch]]))  # 2*2 matrix; B*A element-wise
-        tmp_M = right_M + beta_old[:, np.newaxis]
+        tmp_M = right_M + beta_old
         # beta_new = log_add_matrix_by_col(tmp_M)
-        beta_new = logsumexp(tmp_M, axis=0)
+        beta_new = logsumexp(tmp_M, axis=1)
+        # print beta_new
         # got the new beta
         # print beta_new
         beta_table_list.append(beta_new)
         beta_old = beta_new
 
     # calculate pcll
+    print beta_table_list[-1]
     pcll = logsumexp(beta_old) / len(beta_table_list)
     print pcll
     beta_table_list.reverse()

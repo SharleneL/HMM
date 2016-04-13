@@ -20,11 +20,13 @@ def main(argv):
 
     # forward & backward algorithms
     index_dic, A, B = gen_matrix(input_str)
-    for i in range(10):
-        alpha_table = forward(input_str, A, B, index_dic)
-        beta_table = backward(input_str, A, B, index_dic)
+    alpha_table = forward(input_str, A, B, index_dic)
+    beta_table = backward(input_str, A, B, index_dic)
+    # for i in range(10):
+        # alpha_table = forward(input_str, A, B, index_dic)
+        # beta_table = backward(input_str, A, B, index_dic)
         # print beta_table
-        A, B = forward_backward(alpha_table, beta_table, A, B, index_dic, input_str)
+        # A, B = forward_backward(alpha_table, beta_table, A, B, index_dic, input_str)
 
     print 'END!'
 
