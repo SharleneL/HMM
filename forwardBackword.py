@@ -74,8 +74,8 @@ def forward_backward(alpha_table, beta_table, A_org, B_org, index_dic, input_str
     xi_list = []    # list of 2*2 matrix
     # p = np.exp(logsumexp(alpha_table[-1, :]))  # denominator
     p = logsumexp(alpha_table[-1, :])  # denominator
-    print 'alpha_table[-1, :]:'
-    print logsumexp(alpha_table[-1, :])
+    # print 'alpha_table[-1, :]:'
+    # print logsumexp(alpha_table[-1, :])
     for t in range(0, len(alpha_table) - 1):
         alpha_t = np.array(alpha_table[t])[:, np.newaxis]  # transpose to 2*1 vector
         # print alpha_table[t][:, np.newaxis]
@@ -110,8 +110,8 @@ def forward_backward(alpha_table, beta_table, A_org, B_org, index_dic, input_str
     for i, j in np.ndindex(xi_sum.shape):
         xi_sum[i, j] = logsumexp([xi_list[x][i, j] for x in range(len(xi_list))])
 
-    print 'xi_sum:'
-    print xi_sum
+    # print 'xi_sum:'
+    # print xi_sum
 
     # update A
     # old non log sum:
@@ -163,9 +163,11 @@ def forward_backward(alpha_table, beta_table, A_org, B_org, index_dic, input_str
     A = np.exp(new_A)
     # print A
     B = np.exp(new_B)
-    print B
-    print '\n'
-    print np.sum(B, axis=0)
+    return A, B
+    # print B
+    # print '\n'
+    # print np.sum(B, axis=0)
+
     # print new_A
     # print B
     # ===== / M STEP end / ===== #
