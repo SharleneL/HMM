@@ -5,7 +5,7 @@ from scipy.misc import logsumexp
 import math
 
 
-def gen_matrix(input_str):
+def gen_matrix():
     index_dic = gen_index_dic()
     A, B = init_matrix(index_dic)
     return index_dic, A, B
@@ -16,25 +16,19 @@ def forward(input_str, A, B, index_dic):
     alpha_old = np.array([0.5, 0.5])
 
     # do calculation
-    alpha_old = np.log(alpha_old)  # 1*2 vector; log of original alpha_old
+    alpha_old = np.log(alpha_old)           # 1*2 vector; log of original alpha_old
     alpha_table_list.append(alpha_old)
     for t in range(len(input_str)):
-        obsv_ch = input_str[t]  # current observed char
-        # alpha_new = np.multiply(    np.dot(alpha_old, A),      B[index_dic[obsv_ch]]    )
-        right_M = np.log(A * B[index_dic[obsv_ch]])  # 2*2 matrix; B*A element-wise
+        obsv_ch = input_str[t]              # current observed char
+        right_M = np.log(A * B[index_dic[obsv_ch]])     # 2*2 matrix; B*A element-wise
         tmp_M = right_M + alpha_old[:, np.newaxis]
-        # alpha_new = log_add_matrix_by_col(tmp_M)
-        alpha_new = logsumexp(tmp_M, axis=0)  # axis=0: sum each col
-        # got the new alpha
-        # print 'alpha_new:'
-        # print alpha_new
-        # break
+        alpha_new = logsumexp(tmp_M, axis=0)            # axis=0: sum each col
+        # ASSERT: got the new alpha
         alpha_table_list.append(alpha_new)
         alpha_old = alpha_new
 
     # calculate pcll
     pcll = logsumexp(alpha_table_list[-1]) / (len(alpha_table_list)-1)
-    # print alpha_table_list[-1]
     print pcll
     return np.array(alpha_table_list)
 
@@ -45,24 +39,17 @@ def backward(input_str, A, B, index_dic):
     alpha_init = np.array([0.5, 0.5])
 
     # do calculation
-    beta_old = np.log(beta_old)  # 1*2 vector; log of original beta_old
+    beta_old = np.log(beta_old)         # 1*2 vector; log of original beta_old
     beta_table_list.append(beta_old)
     for i in range(len(input_str)-1, -1, -1):
         obsv_ch = input_str[i]
-        # beta_new = np.dot(    np.multiply(beta_old, B[index_dic[obsv_ch]]),         A   )
         right_M = np.log(np.multiply(A, B[index_dic[obsv_ch]]))  # 2*2 matrix; B*A element-wise
         tmp_M = right_M + beta_old
-        # beta_new = log_add_matrix_by_col(tmp_M)
         beta_new = logsumexp(tmp_M, axis=1)
-        # print beta_new
-        # got the new beta
-        # print beta_new
         beta_table_list.append(beta_new)
         beta_old = beta_new
 
     # calculate pcll
-    # print beta_table_list[-1]
-    # pcll = logsumexp(beta_old) / (len(beta_table_list)-1)
     pcll = logsumexp(beta_table_list[-1] + np.log(alpha_init)) / (len(beta_table_list)-1)
     print pcll
     beta_table_list.reverse()
@@ -70,62 +57,31 @@ def backward(input_str, A, B, index_dic):
 
 
 def forward_backward(alpha_table, beta_table, A_org, B_org, index_dic, input_str):  # input: 2 np matrix
-    print beta_table
     A = np.log(A_org)
     B = np.log(B_org)
 
     # ===== / E STEP start - generate xi_list / ===== #
     xi_list = []    # list of 2*2 matrix
-    # p = np.exp(logsumexp(alpha_table[-1, :]))  # denominator
     p = logsumexp(alpha_table[-1, :])  # denominator
-    # print 'alpha_table[-1, :]:'
-    # print logsumexp(alpha_table[-1, :])
     for t in range(0, len(input_str)):
         obsv_ch = input_str[t]
-        alpha_t = np.array(alpha_table[t])[:, np.newaxis]  # transpose to 2*1 vector
-        # print alpha_table[t][:, np.newaxis]
-        beta_t_plus_one = beta_table[t+1]           # 1*2 vector
-        # print t
-        # print len(input_str)
-        B_t_plus_one = B[index_dic[obsv_ch]]  # 1*2 vector
-        # xi_t = (A * alpha_t * B_t_plus_one * beta_t_plus_one) / p  # a 2*2 matrix
+        alpha_t = np.array(alpha_table[t])[:, np.newaxis]   # transpose to 2*1 vector
+        beta_t_plus_one = beta_table[t+1]                   # 1*2 vector
+        B_t_plus_one = B[index_dic[obsv_ch]]                # 1*2 vector
         xi_t = A + alpha_t + B_t_plus_one + beta_t_plus_one - p  # a 2*2 matrix
 
         xi_list.append(xi_t)
 
-        # print 'iter' + str(t)
-        # print 'A'
-        # print A
-        # print 'alpha_t'
-        # print alpha_t
-        # print 'B'
-        # print B_t_plus_one
-        # print 'beta'
-        # print beta_t_plus_one
-        # print beta_table[t]
-        # print 'p'
-        # print p
-        # print 'xi_t'
-        # print xi_t
-        # print '\n'
-        # if t > 5:
-        #     break
-
-    # get xi_list (len = T-1, each elem is a 2*2 matrix for time t)
+    # ASSERT: got xi_list (len = T-1, each elem is a 2*2 matrix for time t)
     # ===== / E STEP end / ===== #
 
     # ===== / M STEP start - update A & B / ===== #
     xi_sum = np.zeros(A.shape)
-    # for i in range(len(xi_list)):
-    #     xi_sum = xi_sum + xi_list[i]
 
     for i, j in np.ndindex(xi_sum.shape):
         xi_sum[i, j] = logsumexp([xi_list[x][i, j] for x in range(len(xi_list))])
 
     # update A
-    # old non log sum:
-    # new_A_denom = np.sum(xi_sum, axis=1)[:, np.newaxis]
-    # new log sum:
     row_cnt = xi_sum.shape[0]
     col_cnt = xi_sum.shape[1]
     new_A_denom = np.zeros((row_cnt, 1))
@@ -134,28 +90,20 @@ def forward_backward(alpha_table, beta_table, A_org, B_org, index_dic, input_str
         for m in range(len(xi_list)):
             tmp_l.append(logsumexp([xi_list[m][i, n] for n in range(col_cnt)]))  # row sum
         new_A_denom[i, 0] = logsumexp(tmp_l)
-    # print 'A nominator:'
-    # print xi_sum
-    # print 'A denominator:'
-    # print new_A_denom
     new_A = xi_sum - new_A_denom
-    # print 'new_A'
-    # print new_A
 
     # update B
     new_B = np.zeros(B.shape)  # 27*2 matrix
-    # new_B_denom = np.sum(xi_sum, axis=0)     # 1*2 vector
     new_B_denom = np.zeros((1, xi_sum.shape[0]))
     for i in range(new_B_denom.shape[1]):
         tmp_l = []
         for m in range(len(xi_list)):
-            tmp_l.append(logsumexp([xi_list[m][i, n] for n in range(xi_sum.shape[0])]))  # col sum
+            tmp_l.append(logsumexp([xi_list[m][n, i] for n in range(xi_sum.shape[0])]))  # col sum
         new_B_denom[0, i] = logsumexp(tmp_l)
 
-
     obsv_xlst_dic = dict()      # <obsv, current_obsv_xi_list>
-    for i in range(len(input_str)-1):
-        next_obsv = input_str[i+1]
+    for i in range(len(input_str)):
+        next_obsv = input_str[i]
         if next_obsv not in obsv_xlst_dic:
             xlst = []
             xlst.append(xi_list[i])
@@ -165,24 +113,18 @@ def forward_backward(alpha_table, beta_table, A_org, B_org, index_dic, input_str
 
     for obsv, xlst in obsv_xlst_dic.iteritems():
         xlst_sum = np.zeros((1, xlst[0].shape[1]))  # 1*2 matrix
-        # for i in range(len(xlst)):
-        #     cur_x = xlst[i]
-        #     xlst_sum = xlst_sum + np.sum(cur_x, axis=0)   # 1*2 matrix, col sum
         for i in range(xlst_sum.shape[1]):
             tmp_l = []
             for m in range(len(xlst)):
-                tmp_l.append(logsumexp([xlst[m][i, n] for n in range(xi_sum.shape[0])]))  # col sum
+                tmp_l.append(logsumexp([xlst[m][n, i] for n in range(xi_sum.shape[0])]))  # col sum
             xlst_sum[0, i] = logsumexp(tmp_l)
 
         new_B[index_dic[obsv]] = xlst_sum - new_B_denom
 
-    # print 'new_B:'
-    # print new_B
-
-    # get new_A and new_B, 1 iter ends
+    # ASSERT: got new_A and new_B, 1 iter ends
     A = np.exp(new_A)
-    # print A
     B = np.exp(new_B)
+
     return A, B
 
 
