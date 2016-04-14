@@ -41,7 +41,8 @@ def forward(input_str, A, B, index_dic):
 
 def backward(input_str, A, B, index_dic):
     beta_table_list = []
-    beta_old = np.array([0.5, 0.5])
+    beta_old = np.array([1.0, 1.0])
+    alpha_init = np.array([0.5, 0.5])
 
     # do calculation
     beta_old = np.log(beta_old)  # 1*2 vector; log of original beta_old
@@ -61,7 +62,8 @@ def backward(input_str, A, B, index_dic):
 
     # calculate pcll
     print beta_table_list[-1]
-    pcll = logsumexp(beta_old) / (len(beta_table_list)-1)
+    # pcll = logsumexp(beta_old) / (len(beta_table_list)-1)
+    pcll = logsumexp(beta_table_list[-1] + np.log(alpha_init)) / (len(beta_table_list)-1)
     print pcll
     beta_table_list.reverse()
     return np.array(beta_table_list)  # reverse the list
@@ -89,6 +91,25 @@ def forward_backward(alpha_table, beta_table, A_org, B_org, index_dic, input_str
         xi_t = A + alpha_t + B_t_plus_one + beta_t_plus_one - p  # a 2*2 matrix
 
         xi_list.append(xi_t)
+
+        # print 'iter' + str(t)
+        # print 'A'
+        # print A
+        # print 'alpha_t'
+        # print alpha_t
+        # print 'B'
+        # print B_t_plus_one
+        # print 'beta'
+        # print beta_t_plus_one
+        # print beta_table[t]
+        # print 'p'
+        # print p
+        # print 'xi_t'
+        # print xi_t
+        # print '\n'
+        # if t > 5:
+        #     break
+
     # get xi_list (len = T-1, each elem is a 2*2 matrix for time t)
     # ===== / E STEP end / ===== #
 
