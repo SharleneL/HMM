@@ -24,11 +24,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.37007874" vertical-offset="309" max-vertical-offset="690">
-              <caret line="30" column="24" selection-start-line="30" selection-start-column="24" selection-end-line="30" selection-end-column="24" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="234" max-vertical-offset="720">
+              <caret line="31" column="27" selection-start-line="31" selection-start-column="27" selection-end-line="31" selection-end-column="27" />
               <folding>
                 <element signature="e#26#36#0" expanded="true" />
               </folding>
@@ -36,11 +36,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="forwardBackword.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="forwardBackword.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/forwardBackword.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="21.666666" vertical-offset="690" max-vertical-offset="5130">
-              <caret line="7" column="26" selection-start-line="7" selection-start-column="26" selection-end-line="7" selection-end-column="26" />
+            <state vertical-scroll-proportion="0.9745763" vertical-offset="1290" max-vertical-offset="5130">
+              <caret line="109" column="20" selection-start-line="109" selection-start-column="20" selection-end-line="109" selection-end-column="20" />
               <folding>
                 <element signature="e#26#44#0" expanded="true" />
               </folding>
@@ -77,8 +77,8 @@
       <list>
         <option value="$PROJECT_DIR$/preprocess.py" />
         <option value="$PROJECT_DIR$/test.py" />
-        <option value="$PROJECT_DIR$/forwardBackword.py" />
         <option value="$PROJECT_DIR$/main.py" />
+        <option value="$PROJECT_DIR$/forwardBackword.py" />
       </list>
     </option>
   </component>
@@ -390,22 +390,22 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/forwardBackword.py">
+    <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="21.666666" vertical-offset="690" max-vertical-offset="5130">
-          <caret line="7" column="26" selection-start-line="7" selection-start-column="26" selection-end-line="7" selection-end-column="26" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="234" max-vertical-offset="720">
+          <caret line="31" column="27" selection-start-line="31" selection-start-column="27" selection-end-line="31" selection-end-column="27" />
           <folding>
-            <element signature="e#26#44#0" expanded="true" />
+            <element signature="e#26#36#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main.py">
+    <entry file="file://$PROJECT_DIR$/forwardBackword.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.37007874" vertical-offset="309" max-vertical-offset="690">
-          <caret line="30" column="24" selection-start-line="30" selection-start-column="24" selection-end-line="30" selection-end-column="24" />
+        <state vertical-scroll-proportion="0.9745763" vertical-offset="1290" max-vertical-offset="5130">
+          <caret line="109" column="20" selection-start-line="109" selection-start-column="20" selection-end-line="109" selection-end-column="20" />
           <folding>
-            <element signature="e#26#36#0" expanded="true" />
+            <element signature="e#26#44#0" expanded="true" />
           </folding>
         </state>
       </provider>

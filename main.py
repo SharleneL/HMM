@@ -29,8 +29,10 @@ def main(argv):
         A, B = forward_backward(alpha_table, beta_table, A, B, index_dic, input_str)
         # print '\n ITER ' + str(i)
         # print 'alpha:'
+        # print alpha_table
         # print "%.20f" % alpha_table[1, 0]  # 3.43972415  -3.43972414614597932214
         # print 'beta:'
+        # print beta_table
         # print "%.20f" % beta_table[1, 0]  # 9.29857195
 
     print 'END!'
