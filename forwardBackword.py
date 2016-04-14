@@ -21,7 +21,7 @@ def forward(input_str, A, B, index_dic):
     for t in range(len(input_str)):
         obsv_ch = input_str[t]  # current observed char
         # alpha_new = np.multiply(    np.dot(alpha_old, A),      B[index_dic[obsv_ch]]    )
-        right_M = np.log(np.multiply(A, B[index_dic[obsv_ch]]))  # 2*2 matrix; B*A element-wise
+        right_M = np.log(A * B[index_dic[obsv_ch]])  # 2*2 matrix; B*A element-wise
         tmp_M = right_M + alpha_old[:, np.newaxis]
         # alpha_new = log_add_matrix_by_col(tmp_M)
         alpha_new = logsumexp(tmp_M, axis=0)  # axis=0: sum each col
@@ -34,7 +34,7 @@ def forward(input_str, A, B, index_dic):
 
     # calculate pcll
     pcll = logsumexp(alpha_table_list[-1]) / (len(alpha_table_list)-1)
-    print alpha_table_list[-1]
+    # print alpha_table_list[-1]
     print pcll
     return np.array(alpha_table_list)
 
@@ -61,7 +61,7 @@ def backward(input_str, A, B, index_dic):
         beta_old = beta_new
 
     # calculate pcll
-    print beta_table_list[-1]
+    # print beta_table_list[-1]
     # pcll = logsumexp(beta_old) / (len(beta_table_list)-1)
     pcll = logsumexp(beta_table_list[-1] + np.log(alpha_init)) / (len(beta_table_list)-1)
     print pcll
@@ -70,6 +70,7 @@ def backward(input_str, A, B, index_dic):
 
 
 def forward_backward(alpha_table, beta_table, A_org, B_org, index_dic, input_str):  # input: 2 np matrix
+    print beta_table
     A = np.log(A_org)
     B = np.log(B_org)
 
@@ -125,13 +126,21 @@ def forward_backward(alpha_table, beta_table, A_org, B_org, index_dic, input_str
     # old non log sum:
     # new_A_denom = np.sum(xi_sum, axis=1)[:, np.newaxis]
     # new log sum:
-    new_A_denom = np.zeros((xi_sum.shape[0], 1))
+    row_cnt = xi_sum.shape[0]
+    col_cnt = xi_sum.shape[1]
+    new_A_denom = np.zeros((row_cnt, 1))
     for i in range(new_A_denom.shape[0]):
         tmp_l = []
         for m in range(len(xi_list)):
-            tmp_l.append(logsumexp([xi_list[m][i, n] for n in range(xi_sum.shape[1])]))  # row sum
+            tmp_l.append(logsumexp([xi_list[m][i, n] for n in range(col_cnt)]))  # row sum
         new_A_denom[i, 0] = logsumexp(tmp_l)
+    # print 'A nominator:'
+    # print xi_sum
+    # print 'A denominator:'
+    # print new_A_denom
     new_A = xi_sum - new_A_denom
+    # print 'new_A'
+    # print new_A
 
     # update B
     new_B = np.zeros(B.shape)  # 27*2 matrix
@@ -167,6 +176,9 @@ def forward_backward(alpha_table, beta_table, A_org, B_org, index_dic, input_str
 
         new_B[index_dic[obsv]] = xlst_sum - new_B_denom
 
+    # print 'new_B:'
+    # print new_B
+
     # get new_A and new_B, 1 iter ends
     A = np.exp(new_A)
     # print A
@@ -190,6 +202,7 @@ def init_matrix(index_dic):
     # initialize A
     # A = np.array([[0.41, 0.27], [0.27, 0.05]])
     A = np.array([[0.24765875, 0.75234125], [0.95411204, 0.04588796]])
+    A = np.load("ttta.npy")
 
     # initialize B
     B = np.zeros((27, 2))
@@ -236,6 +249,15 @@ def init_matrix(index_dic):
                4.11496913e-02,   3.19366497e-03,   6.35058469e-02,   1.18046495e-02,
                1.92433268e-02,   3.95879605e-02,   2.35828607e-02,   1.01672814e-02,
                2.05918877e-02,   1.83547085e-02,   3.84244412e-02]
+
+    B = np.load("tttb_shift.npy").T
+    c_plist = B[:, 0].tolist()
+    v_plist = B[:, 1].tolist()
+
+    # c_plist = np.random.dirichlet(np.ones(27), size=1)[0]
+    # v_plist = np.random.dirichlet(np.ones(27), size=1)[0]
+
+
     B[index_dic['A'], 0] = c_plist[0]
     B[index_dic['B'], 0] = c_plist[1]
     B[index_dic['C'], 0] = c_plist[2]
