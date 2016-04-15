@@ -2,20 +2,21 @@ __author__ = 'luoshalin'
 
 import re
 import operator
+import numpy as np
 
 # making all letters uppercase
 # replacing all non-alphabetic characters (numbers, punctuation, and whitespace, including line breaks) with spaces, and then collapsing sequences of spaces to be one space (this should take 2-3 lines of python code).
 # You will be treating this dataset as a stream of characters (that's why we don't want any line breaks).
 def preprocess(fpath):
     s = ''
-    with open(fpath) as f:
-        line = f.readline()
-        while line != '':
-            # process
-            line = re.sub('[^a-zA-Z]+', ' ', line).strip().upper()
-            if line != '':
-                s = s + line + ' '
-            line = f.readline()
+
+    f = open(fpath)
+    lines = f.readlines()
+    for line in lines:
+        line = re.sub('[^a-zA-Z]+', ' ', line).strip().upper()
+        if line != '':
+            s = s + line + ' '
+    f.close()
     return s
 
 
@@ -28,9 +29,15 @@ def analyze(s):
 
     v_dic = dict()
     c_dic = dict()
-    v_total = 0
-    c_total = 0
 
+    corpus = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ '
+    for i in range(len(corpus)):
+        ch = corpus[i]
+        v_dic[ch] = 1
+        c_dic[ch] = 1
+
+    v_total = len(v_dic)
+    c_total = len(c_dic)
 
     length = len(s)
     if length < 2:
@@ -71,17 +78,35 @@ def analyze(s):
             else:               # cc
                 cc_cnt += 1
 
-    print 'P(C->C) = ' + str(float(cc_cnt) / (length - 1))
-    print 'P(V->V) = ' + str(float(vv_cnt) / (length - 1))
-    print 'P(C->V) = ' + str(float(cv_cnt) / (length - 1))
-    print 'P(V->C) = ' + str(float(vc_cnt) / (length - 1))
+    print 'P(C->C) = ' + str(float(cc_cnt) / (c_total - 27))
+    print 'P(C->V) = ' + str(float(cv_cnt) / (c_total - 27))
+    print 'P(V->V) = ' + str(float(vv_cnt) / (v_total - 27))
+    print 'P(V->C) = ' + str(float(vc_cnt) / (v_total - 27))
 
     sorted_c_list = reversed(sorted(c_dic.items(), key=operator.itemgetter(1)))
     sorted_v_list = reversed(sorted(v_dic.items(), key=operator.itemgetter(1)))
+
+    # sorted_c_list = sorted(c_dic.items(), key=operator.itemgetter(0))
+    # sorted_v_list = sorted(v_dic.items(), key=operator.itemgetter(0))
+
+    cp_list = []
+    vp_list = []
+
     print '\nConsonant Distribution:'
     for (key, value) in sorted_c_list:
-        print 'P(' + key + '): ' + str(float(value) / c_total)
+        cp = float(value) / c_total
+        print 'P(' + key + '): ' + str(cp)
+        cp_list.append(cp)
 
     print '\nVowel Distribution:'
     for (key, value) in sorted_v_list:
-        print 'P(' + key + '): ' + str(float(value) / v_total)
+        vp = float(value) / v_total
+        print 'P(' + key + '): ' + str(vp)
+        vp_list.append(vp)
+
+    print sum(cp_list)
+    print sum(vp_list)
+
+    print '\n'
+    print cp_list
+    print vp_list
