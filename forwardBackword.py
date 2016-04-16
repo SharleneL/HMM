@@ -181,7 +181,7 @@ def init_matrix(index_dic):
     # c_plist = B[:, 0].tolist()
     # v_plist = B[:, 1].tolist()
 
-    # Analyzed p lists w/ pseudocounts
+    # Natural p lists w/ pseudocounts
     # c_plist = [0.2690930159064574, 5.267038870746866e-05, 0.017117876329927315, 0.02759928368271358, 0.05340777414937322, 5.267038870746866e-05, 0.030601495839039292, 0.018645317602443905, 0.07905825344991046, 5.267038870746866e-05, 0.0012114189402717792, 0.00474033498367218, 0.04608659011903508, 0.033656378384072476, 0.08148109133045402, 5.267038870746866e-05, 0.016433161276730224, 0.0017381228273464658, 0.07421257768882335, 0.07658274518065944, 0.09844095649425892, 5.267038870746866e-05, 0.0149583903929211, 0.028231328347203204, 0.0011587485515643105, 0.02512377541346255, 0.00010534077741493732]
     # v_plist = [0.00011712344811431249, 0.20039821972358865, 0.00011712344811431249, 0.00011712344811431249, 0.00011712344811431249, 0.33532443195127665, 0.00011712344811431249, 0.00011712344811431249, 0.00011712344811431249, 0.18329819629889904, 0.00011712344811431249, 0.00011712344811431249, 0.00011712344811431249, 0.00011712344811431249, 0.00011712344811431249, 0.2073085031623331, 0.00011712344811431249, 0.00011712344811431249, 0.00011712344811431249, 0.00011712344811431249, 0.00011712344811431249, 0.07109393300538767, 0.00011712344811431249, 0.00011712344811431249, 0.00011712344811431249, 0.00011712344811431249, 0.00011712344811431249]
 
@@ -194,7 +194,7 @@ def init_matrix(index_dic):
     # c_plist = np.random.dirichlet(np.ones(27), size=1)[0]
     # v_plist = np.random.dirichlet(np.ones(27), size=1)[0]
 
-    # best pc-ll init
+    # best pc-ll init - Q8 & Q9
     A = np.array([[0.07471292, 0.92528708], [0.45377186, 0.54622814]])
     c_plist = [2.42995968e-04,   2.39561379e-02,   3.86445056e-02,   7.48992104e-02,
                1.19827010e-06,   4.28844444e-02,   2.43660067e-02,   1.01347900e-01,
@@ -308,21 +308,34 @@ def plot_pcll(pcll_list):
 
 def vtb_decode(input_str, A, B, index_dic):
     vtb_table_list = []
-    hidden_state_list = []
     vtb_old = np.array([0.5, 0.5])
 
     # do calculation
     vtb_old = np.log(vtb_old)           # 1*2 vector
-    vtb_table_list.append(vtb_old)
+    # vtb_table_list.append(vtb_old.tolist())
     for t in range(len(input_str)):
         obsv_ch = input_str[t]              # current observed char
         right_M = np.log(A * B[index_dic[obsv_ch]])     # 2*2 matrix; B*A element-wise
         tmp_M = right_M + vtb_old[:, np.newaxis]
-        vtb_new = np.log(np.amax(tmp_M, axis=0))
+        # vtb_new = np.log(np.amax(tmp_M, axis=0))
+        vtb_new = np.amax(tmp_M, axis=0)
         # ASSERT: got the new vtb
-        vtb_table_list.append(vtb_new)
-        hidden_state_list.append(tmp_M.argmax(axis=0))
+        vtb_table_list.append(vtb_new.tolist())
+        # hidden_state_list.append(tmp_M.argmax(axis=0))
         vtb_old = vtb_new
+    hidden_state_list = np.array(vtb_table_list).argmax(axis=1)
+    # np.array(vtb_table_list)
 
     # ASSERT: got vtb_table_list &  hidden_state_list
-    return np.array(vtb_table_list)
+    return hidden_state_list
+
+
+def ll_decode(input_str, B, index_dic):
+    hidden_state_list = []
+    for t in range(len(input_str)):
+        obsv_ch = input_str[t]
+        if B[index_dic[obsv_ch]][0] > B[index_dic[obsv_ch]][1]:
+            hidden_state_list.append(0)
+        else:
+            hidden_state_list.append(1)
+    return hidden_state_list
