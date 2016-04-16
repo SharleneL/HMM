@@ -2,8 +2,6 @@ __author__ = 'luoshalin'
 
 import numpy as np
 from scipy.misc import logsumexp
-import math
-import matplotlib.pyplot as plt
 import pylab as pl
 
 
@@ -71,13 +69,10 @@ def forward_backward(alpha_table, beta_table, A_org, B_org, index_dic, input_str
         xi_t = A + alpha_t + B_t_plus_one + beta_t_plus_one - p  # a 2*2 matrix
 
         xi_list.append(xi_t)
-
     # ASSERT: got xi_list (len = T-1, each elem is a 2*2 matrix for time t)
-    # ===== / E STEP end / ===== #
 
     # ===== / M STEP start - update A & B / ===== #
     xi_sum = np.zeros(A.shape)
-
     for i, j in np.ndindex(xi_sum.shape):
         xi_sum[i, j] = logsumexp([xi_list[x][i, j] for x in range(len(xi_list))])
 
@@ -143,49 +138,15 @@ def gen_index_dic():
 def init_matrix(index_dic):
     # initialize A
     A = np.array([[0.60, 0.40], [0.89, 0.11]])  #
-    # A = np.load("ttta.npy")
 
     # initialize B
     B = np.zeros((27, 2))
 
-    # B[index_dic[' '], 0] = 0.269384956219
-    # B[index_dic['T'], 0] = 0.098586348771
-    # B[index_dic['N'], 0] = 0.0815486865703
-    # B[index_dic['H'], 0] = 0.0791222702817
-    # B[index_dic['S'], 0] = 0.0766431058128
-    # B[index_dic['R'], 0] = 0.0742694377044
-    # B[index_dic['D'], 0] = 0.0534339065302
-    # B[index_dic['L'], 0] = 0.0461019094841
-    # B[index_dic['M'], 0] = 0.0336533389598
-    # B[index_dic['F'], 0] = 0.0305939445089
-    # B[index_dic['W'], 0] = 0.0282202764005
-    # B[index_dic['C'], 0] = 0.0275872982382
-    # B[index_dic['Y'], 0] = 0.0251081337694
-    # B[index_dic['G'], 0] = 0.0186201076063
-    # B[index_dic['B'], 0] = 0.0170904103808
-    # B[index_dic['P'], 0] = 0.0164046840384
-    # B[index_dic['V'], 0] = 0.0149277349931
-    # B[index_dic['K'], 0] = 0.00469458803671
-    # B[index_dic['Q'], 0] = 0.00168794176601
-    # B[index_dic['J'], 0] = 0.00116045996413
-    # B[index_dic['X'], 0] = 0.00110771178394
-    # B[index_dic['Z'], 0] = 5.27481801878e-05
-    # B[index_dic['E'], 1] = 0.336270708495
-    # B[index_dic['O'], 1] = 0.207848666432
-    # B[index_dic['A'], 1] = 0.20091646105
-    # B[index_dic['I'], 1] = 0.183762190107
-    # B[index_dic['U'], 1] = 0.0712019739161
-
-    # cz's init p lists
-    # B = np.load("tttb_shift.npy").T
-    # c_plist = B[:, 0].tolist()
-    # v_plist = B[:, 1].tolist()
-
-    # Natural p lists w/ pseudocounts
+    # CASE#1: NATURAL
     # c_plist = [0.2690930159064574, 5.267038870746866e-05, 0.017117876329927315, 0.02759928368271358, 0.05340777414937322, 5.267038870746866e-05, 0.030601495839039292, 0.018645317602443905, 0.07905825344991046, 5.267038870746866e-05, 0.0012114189402717792, 0.00474033498367218, 0.04608659011903508, 0.033656378384072476, 0.08148109133045402, 5.267038870746866e-05, 0.016433161276730224, 0.0017381228273464658, 0.07421257768882335, 0.07658274518065944, 0.09844095649425892, 5.267038870746866e-05, 0.0149583903929211, 0.028231328347203204, 0.0011587485515643105, 0.02512377541346255, 0.00010534077741493732]
     # v_plist = [0.00011712344811431249, 0.20039821972358865, 0.00011712344811431249, 0.00011712344811431249, 0.00011712344811431249, 0.33532443195127665, 0.00011712344811431249, 0.00011712344811431249, 0.00011712344811431249, 0.18329819629889904, 0.00011712344811431249, 0.00011712344811431249, 0.00011712344811431249, 0.00011712344811431249, 0.00011712344811431249, 0.2073085031623331, 0.00011712344811431249, 0.00011712344811431249, 0.00011712344811431249, 0.00011712344811431249, 0.00011712344811431249, 0.07109393300538767, 0.00011712344811431249, 0.00011712344811431249, 0.00011712344811431249, 0.00011712344811431249, 0.00011712344811431249]
 
-    # random init
+    # CASE#2: RANDOM INIT
     # A
     # alist1 = np.random.dirichlet(np.ones(2), size=1)[0]
     # alist2 = np.random.dirichlet(np.ones(2), size=1)[0]
@@ -194,7 +155,7 @@ def init_matrix(index_dic):
     # c_plist = np.random.dirichlet(np.ones(27), size=1)[0]
     # v_plist = np.random.dirichlet(np.ones(27), size=1)[0]
 
-    # best pc-ll init - Q8 & Q9
+    # CASE#3: [Q8 & Q9] best pc-ll init
     # A = np.array([[0.07471292, 0.92528708], [0.45377186, 0.54622814]])
     # c_plist = [2.42995968e-04,   2.39561379e-02,   3.86445056e-02,   7.48992104e-02,
     #            1.19827010e-06,   4.28844444e-02,   2.43660067e-02,   1.01347900e-01,
@@ -211,8 +172,7 @@ def init_matrix(index_dic):
     #            4.22568466e-02,   9.37368279e-35,   1.19095014e-31,   6.85959322e-05,
     #            1.68525270e-06,   2.30633767e-58,   3.66288745e-01]
 
-
-    # best pc-ll init - Q14
+    # CASE#4: [Q14] best pc-ll init
     A = np.array([[0.10284645, 0.89715355], [0.63859265, 0.36140735]])
     c_plist = [2.78752401e-01,   1.24166202e-18,   2.44387237e-03,   2.41589415e-24,
                1.39376200e-01,   5.90119590e-25,   4.90652895e-27,   5.03046270e-14,
@@ -297,26 +257,6 @@ def init_matrix(index_dic):
     return A, B
 
 
-# # log add each column
-# def log_add_matrix_by_col(M):
-#     # elem1 = log_add(M[0, 0], M[1, 0])
-#     # elem2 = log_add(M[0, 1], M[1, 1])
-#     # return np.array([elem1, elem2])
-#     res = logsumexp(M, axis=0)
-#     return res
-
-
-
-# calculate the log add for 2 numbers
-# def log_add(left, right):
-#     if right < left:
-#         return left + np.log1p(np.exp(right - left))
-#     elif right > left:
-#         return right + np.log1p(np.exp(left - right))
-#     else:
-#         return left + math.log(2)
-
-
 # function to plot the pcll list
 def plot_pcll(pcll_list):
     x = range(len(pcll_list))
@@ -330,19 +270,15 @@ def vtb_decode(input_str, A, B, index_dic):
 
     # do calculation
     vtb_old = np.log(vtb_old)           # 1*2 vector
-    # vtb_table_list.append(vtb_old.tolist())
     for t in range(len(input_str)):
         obsv_ch = input_str[t]              # current observed char
         right_M = np.log(A * B[index_dic[obsv_ch]])     # 2*2 matrix; B*A element-wise
         tmp_M = right_M + vtb_old[:, np.newaxis]
-        # vtb_new = np.log(np.amax(tmp_M, axis=0))
         vtb_new = np.amax(tmp_M, axis=0)
         # ASSERT: got the new vtb
         vtb_table_list.append(vtb_new.tolist())
-        # hidden_state_list.append(tmp_M.argmax(axis=0))
         vtb_old = vtb_new
     hidden_state_list = np.array(vtb_table_list).argmax(axis=1)
-    # np.array(vtb_table_list)
 
     # ASSERT: got vtb_table_list &  hidden_state_list
     return hidden_state_list

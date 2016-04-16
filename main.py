@@ -26,7 +26,7 @@ def main(argv):
     # preprocess
     input_str = preprocess(hmm_train_file_path)
     # do analysis
-    # analyze(input_str)
+    analyze(input_str)
 
     # forward & backward algorithms
     index_dic, A, B = gen_matrix()
@@ -52,7 +52,7 @@ def main(argv):
         itr += 1
 
     # plot
-    # plot_pcll(pcll_list)
+    plot_pcll(pcll_list)
 
     print '\n=========FINAL A & B==========='
     print 'A:'
@@ -63,11 +63,10 @@ def main(argv):
 
 
     # viterbi decoder
-    # vtb_input_str = preprocess(vtb_train_file_path)
-    # vtb_hidden_state_list = vtb_decode(vtb_input_str, A, B, index_dic)
-    # ll_hidden_state_list = ll_decode(vtb_input_str, B, index_dic)
-    # print ll_hidden_state_list
-
+    vtb_input_str = preprocess(vtb_train_file_path)
+    vtb_hidden_state_list = vtb_decode(vtb_input_str, A, B, index_dic)
+    ll_hidden_state_list = ll_decode(vtb_input_str, B, index_dic)
+    print ll_hidden_state_list
 
     print 'END!'
 
